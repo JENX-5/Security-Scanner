@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AWS security compliance scan dashboard">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Sentinel · Cloud Security Posture</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- ================= STICKY HUD HEADER: SCORE & RUN SCAN ALWAYS VISIBLE ================= -->
+  <header class="topbar-wrapper">
+    <div class="topbar">
+      <div class="topbar-brand">
+        <p class="eyebrow"><span class="pulse-dot"></span> AWS SECURITY OPERATIONS</p>
+        <h1 class="brand-title">Cloud Security <span>Posture</span></h1>
+        <p class="brand-subtitle">A live view of your cloud’s security posture.</p>
+      </div>
+
+      <nav class="nav-pages" aria-label="Page navigation">
+        <a href="index.html" class="nav-page-btn active">Risk overview</a>
+        <a href="commands.html" class="nav-page-btn">CLI commands <span class="nav-pill">5 scenarios</span></a>
+      </nav>
+
+      <div class="top-actions">
+        <!-- Floating Security Score HUD -->
+        <div id="hudScoreCard" class="hud-score-card good">
+          <div class="hud-score-left">
+            <span class="hud-label">SECURITY SCORE</span>
+            <span id="hudFindings" class="hud-sub">0 findings</span>
+          </div>
+          <strong id="hudScore" class="hud-score">100</strong>
+        </div>
+
+        <button id="scanButton" class="button">Run scan</button>
+        <button id="themeToggle" class="button secondary">Use dark mode</button>
+        <div id="scanBadge" class="status-badge">Loading scan…</div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div id="page-overview" class="page-container active">
+    <!-- ================= RISK OVERVIEW & COVERAGE ================= -->
+    <section class="summary-grid" id="summarySection" aria-label="Scan summary">
+      <article class="card score-card">
+        <p class="card-label">Security score</p>
+        <strong id="securityScore" class="score">—</strong>
+        <p id="scoreCaption" class="muted">Calculating</p>
+        <span class="score-mark" aria-hidden="true"></span>
+      </article>
+      <article class="card">
+        <p class="card-label">Critical</p>
+        <strong id="criticalCount" class="metric critical">0</strong>
+      </article>
+      <article class="card">
+        <p class="card-label">High</p>
+        <strong id="highCount" class="metric high">0</strong>
+      </article>
+      <article class="card">
+        <p class="card-label">Resources checked</p>
+        <strong id="resourceCount" class="metric">0</strong>
+      </article>
+    </section>
+
+    <section class="details-grid">
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">LATEST SCAN</p>
+            <h2>Coverage</h2>
+          </div>
+          <div class="scan-meta"><time id="scanTime">—</time><span id="scanRegion" class="region-tag">AWS · —</span></div>
+        </div>
+        <div id="coverage" class="coverage"></div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">HISTORY</p>
+            <h2>Recent scans</h2>
+          </div>
+        </div>
+        <div id="history" class="history"></div>
+      </article>
+    </section>
+
+    <!-- ================= SECTION 3: RISK BREAKDOWN & PRIORITY FINDINGS ================= -->
+    <section class="panel severity-panel" aria-labelledby="severityTitle">
+      <div class="panel-heading">
+        <div><p class="eyebrow">RISK BREAKDOWN</p><h2 id="severityTitle">Findings by severity</h2></div>
+        <span id="findingTotal" class="total-pill">0 total</span>
+      </div>
+      <div class="severity-layout">
+        <div id="severityBreakdown" class="severity-breakdown"></div>
+        <aside id="riskInsight" class="risk-insight">
+          <span class="insight-icon" aria-hidden="true"></span>
+          <div><strong>All clear</strong><p>No open findings in the latest scan. Keep your scheduled scans running to catch new changes.</p></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="panel findings-panel" id="findingsSection">
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">PRIORITY QUEUE</p>
+          <h2>Open findings</h2>
+        </div>
+        <label class="filter-label">
+          Severity
+          <select id="severityFilter">
+            <option value="all">All</option>
+            <option value="Critical">Critical</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+        </label>
+      </div>
+      <div id="findings"></div>
+    </section>
+
+    <!-- ================= SECTION 4: LOCAL START & SAFE SYNTHETIC DEMO ================= -->
+    <section class="launch-panel panel" id="setupSection" aria-labelledby="launchTitle">
+      <div class="launch-copy">
+        <p class="eyebrow">GET STARTED · LOCAL DASHBOARD</p>
+        <h2 id="launchTitle">Bring your security console online</h2>
+        <p class="muted">Copy these commands into Terminal to start the dashboard with your authenticated AWS profile. The sample score demo also works without AWS credentials.</p>
+        <div class="launch-requirements"><span>⌘ Python 3</span><span>⌘ AWS profile: <code>scanner</code></span></div>
+      </div>
+      <div class="terminal-card">
+        <div class="terminal-top"><div class="window-dots"><i></i><i></i><i></i></div><span>TERMINAL · zsh</span><button id="copyStart" class="copy-button" type="button">Copy</button></div>
+        <pre id="startCommands">cd /path/to/scanner-project
+export AWS_PROFILE=scanner
+.venv/bin/python local_app.py</pre>
+        <p class="terminal-hint">Then open <code>http://localhost:8000</code>. Press <kbd>Ctrl</kbd> + <kbd>C</kbd> in Terminal to stop.</p>
+      </div>
+    </section>
+
+    <section class="panel demo-panel">
+      <div class="panel-heading"><div><p class="eyebrow">SAFE DEMO</p><h2>Demonstrate score changes</h2></div></div>
+      <p class="muted">Load five clearly labeled sample findings to show the score change from 100 to 10. This is local sample data; it does not create or change AWS resources.</p>
+      <div class="demo-actions"><button id="loadDemo" class="button">Show five sample findings</button><button id="loadLive" class="button secondary">Return to current scan</button></div>
+      <p id="demoNotice" class="muted" aria-live="polite">Current view uses the dashboard scan data.</p>
+      <pre id="scanCommand" class="command-output" aria-live="polite">Run scan to see the command used.</pre>
+    </section>
+    </div>
+  </main>
+
+  <footer>
+    Generated by the Automated Security Compliance Scanner for Cloud Accounts
+  </footer>
+  <script src="app.js" defer></script>
+</body>
+</html>

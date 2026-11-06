@@ -1,0 +1,26 @@
+__pycache__/
+.venv/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.terraform/
+*.tfstate
+*.tfstate.*
+terraform.tfvars
+*.zip
+.DS_Store
+
+# Local credentials and environment configuration
+.aws/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local scan output and generated reports
+dashboard/dashboard-data.json
+findings-v2.json
+evidence/
+output/

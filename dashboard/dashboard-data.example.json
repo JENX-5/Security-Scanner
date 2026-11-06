@@ -1,0 +1,23 @@
+{
+  "latest_scan": {
+    "scan_time": "2026-01-01T12:00:00Z",
+    "region": "demo",
+    "scan_status": "complete",
+    "demo_mode": true,
+    "resources_scanned": {
+      "security_groups": 1,
+      "ebs_volumes": 0,
+      "rds_instances": 0,
+      "s3_buckets": 0
+    },
+    "findings": [],
+    "errors": []
+  },
+  "scan_history": [
+    {
+      "scan_time": "2026-01-01T12:00:00Z",
+      "scan_status": "complete",
+      "finding_count": 0
+    }
+  ]
+}

@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AWS security compliance scan dashboard">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Sentinel · CLI Commands</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar-wrapper">
+    <div class="topbar">
+      <div class="topbar-brand">
+        <p class="eyebrow"><span class="pulse-dot"></span> AWS SECURITY OPERATIONS</p>
+        <h1 class="brand-title">Cloud Security <span>Posture</span></h1>
+        <p class="brand-subtitle">A live view of your cloud’s security posture.</p>
+      </div>
+
+      <nav class="nav-pages" aria-label="Page navigation">
+        <a href="index.html" class="nav-page-btn">Risk overview</a>
+        <a href="commands.html" class="nav-page-btn active">CLI commands <span class="nav-pill">5 scenarios</span></a>
+      </nav>
+
+      <div class="top-actions">
+        <!-- Floating Security Score HUD -->
+        <div id="hudScoreCard" class="hud-score-card good">
+          <div class="hud-score-left">
+            <span class="hud-label">SECURITY SCORE</span>
+            <span id="hudFindings" class="hud-sub">0 findings</span>
+          </div>
+          <strong id="hudScore" class="hud-score">100</strong>
+        </div>
+
+        <button id="scanButton" class="button">Run scan</button>
+        <button id="themeToggle" class="button secondary">Use dark mode</button>
+        <div id="scanBadge" class="status-badge">Loading scan…</div>
+      </div>
+    </div>
+  </header>
+  <main>
+    <!-- ================= CLI COMMANDS & REMEDIATION ================= -->
+    <section class="panel live-demo-panel" id="liveDemoSection" aria-labelledby="liveDemoTitle">
+      <div class="panel-heading">
+        <div>
+          <p class="eyebrow">LIVE AWS CLI TESTING · INTERACTIVE VULNERABILITY LAB</p>
+          <h2 id="liveDemoTitle">5 Terminal Commands to Induce &amp; Fix Vulnerabilities</h2>
+        </div>
+      </div>
+      <p class="muted">Copy and run these commands in your terminal to create intentional misconfigurations in your AWS account. After running each command, glance at the <strong>sticky header above</strong> and click <strong>Run scan</strong> to watch the Security Score drop in real time. Switch to the <strong>Fix &amp; Remediate</strong> tab to resolve the issue and watch your score recover back to 100.</p>
+
+      <p class="demo-safety-note"><strong>Sandbox only.</strong> These scenarios deliberately create exposed or unencrypted AWS resources. Use a dedicated test account, never production, and run the cleanup command when finished.</p>
+
+      <div class="live-env-badge">
+        <span>Prerequisite in your Terminal:</span>
+        <code>export AWS_PROFILE=scanner AWS_REGION=eu-north-1</code>
+      </div>
+
+      <div class="cli-cards-grid">
+        <!-- Card 1 -->
+        <article class="cli-card">
+          <div class="cli-card-header">
+            <div>
+              <h3 class="cli-card-title"><span class="pulse-dot"></span> 1. Expose SSH Port 22 to the World</h3>
+              <p class="muted" style="margin:4px 0 0;font-size:0.8rem">Creates a demo security group with unrestricted ingress on TCP port 22 (0.0.0.0/0).</p>
+            </div>
+            <div class="cli-badges">
+              <span class="severity High">High</span>
+              <span class="cli-score-pill">Score: 100 → 82 (-18 pts)</span>
+            </div>
+          </div>
+          <div class="cli-tabs">
+            <button type="button" class="cli-tab-btn active induce" data-mode="induce">Induce finding <span>Score decreases</span></button>
+            <button type="button" class="cli-tab-btn fix" data-mode="fix">Remediate <span>Score recovers</span></button>
+          </div>
+          <div class="cli-pane active" data-mode="induce">
+            <div class="cli-code-wrap">
+              <div class="cli-code-header">
+                <span>TERMINAL · AWS CLI</span>
+                <button type="button" class="copy-button copy-cli-btn" data-target="cmd-flaw-1">Copy</button>
+              </div>
+              <pre id="cmd-flaw-1">aws ec2 create-security-group --group-name demo-scanner-sg --description "Compliance scanner demo group" --region eu-north-1 --profile scanner 2>/dev/null || true
+aws ec2 authorize-security-group-ingress --group-name demo-scanner-sg --protocol tcp --port 22 --cidr 0.0.0.0/0 --region eu-north-1 --profile scanner</pre>
+            </div>
+          </div>
+          <div class="cli-pane" data-mode="fix">
+            <div class="cli-code-wrap">
+              <div class="cli-code-header">
+                <span>TERMINAL · AWS CLI REMEDIATION</span>
+                <button type="button" class="copy-button copy-cli-btn" data-target="cmd-fix-1">Copy</button>
+              </div>
+              <pre id="cmd-fix-1">aws ec2 revoke-security-group-ingress --group-name demo-scanner-sg --protocol tcp --port 22 --cidr 0.0.0.0/0 --region eu-north-1 --profile scanner</pre>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 2 -->
+        <article class="cli-card">
+          <div class="cli-card-header">
+            <div>
+              <h3 class="cli-card-title"><span class="pulse-dot"></span> 2. Expose RDP Port 3389 to the World</h3>
+              <p class="muted" style="margin:4px 0 0;font-size:0.8rem">Adds unrestricted ingress rule for Windows Remote Desktop (TCP port 3389).</p>
+            </div>
+            <div class="cli-badges">
+              <span class="severity High">High</span>
+              <span class="cli-score-pill">Score: 82 → 64 (-18 pts)</span>
+            </div>
+          </div>
+          <div class="cli-tabs">
+            <button type="button" class="cli-tab-btn active induce" data-mode="induce">Induce finding <span>Score decreases</span></button>
+            <button type="button" class="cli-tab-btn fix" data-mode="fix">Remediate <span>Score recovers</span></button>
+          </div>
+          <div class="cli-pane active" data-mode="induce">
+            <div class="cli-code-wrap">
+              <div class="cli-code-header">
+                <span>TERMINAL · AWS CLI</span>
+                <button type="button" class="copy-button copy-cli-btn" data-target="cmd-flaw-2">Copy</button>
+              </div>
+              <pre id="cmd-flaw-2">aws ec2 authorize-security-group-ingress --group-name demo-scanner-sg --protocol tcp --port 3389 --cidr 0.0.0.0/0 --region eu-north-1 --profile scanner</pre>
+            </div>
+          </div>
+          <div class="cli-pane" data-mode="fix">
+            <div class="cli-code-wrap">
+              <div class="cli-code-header">
+                <span>TERMINAL · AWS CLI REMEDIATION</span>
+                <button type="button" class="copy-button copy-cli-btn" data-target="cmd-fix-2">Copy</button>
+              </div>
+              <pre id="cmd-fix-2">aws ec2 revoke-security-group-ingress --group-name demo-scanner-sg --protocol tcp --port 3389 --cidr 0.0.0.0/0 --region eu-north-1 --profile scanner</pre>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="cli-card">
+          <div class="cli-card-header">
+            <div>
+              <h3 class="cli-card-title"><span class="pulse-dot"></span> 3. Provision Unencrypted EBS Storage Volume</h3>
+              <p class="muted" style="margin:4px 0 0;font-size:0.8rem">Creates a 1 GiB Elastic Block Store volume without encryption at rest enabled.</p>
+            </div>
+            <div class="cli-badges">
+              <span class="severity High">High</span>
+              <span class="cli-score-pill">Score: 64 → 46 (-18 pts)</span>
+            </div>
+          </div>
+          <div class="cli-tabs">
+            <button type="button" class="cli-tab-btn active induce" data-mode="induce">Induce finding <span>Score decreases</span></button>
+            <button type="button" class="cli-tab-btn fix" data-mode="fix">Remediate <span>Score recovers</span></button>
+          </div>
+          <div class="cli-pane active" data-mode="induce">
+            <div class="cli-code-wrap">
+              <div class="cli-code-header">
+                <span>TERMINAL · AWS CLI</span>
+                <button type="button" class="copy-button copy-cli-btn" data-target="cmd-flaw-3">Copy</button>
+              </div>
+              <pre id="cmd-flaw-3">aws ec2 create-volume --availability-zone eu-north-1a --size 1 --volume-type gp3 --no-encrypted --tag-specifications 'ResourceType=volume,Tags=[{Key=Name,Value=demo-unencrypted-vol-1}]' --region eu-north-1 --profile scanner</pre>
+            </div>
+          </div>
+          <div class="cli-pane" data-mode="fix">
+            <div class="cli-code-wrap">
+              <div class="cli-code-header">
+                <span>TERMINAL · AWS CLI REMEDIATION</span>
+                <button type="button" class="copy-button copy-cli-btn" data-target="cmd-fix-3">Copy</button>
+              </div>
+              <pre id="cmd-fix-3">aws ec2 delete-volume --volume-id $(aws ec2 describe-volumes --filters "Name=tag:Name,Values=demo-unencrypted-vol-1" "Name=status,Values=available" --query "Volumes[0].VolumeId" --output text --region eu-north-1 --profile scanner) --region eu-north-1 --profile scanner</pre>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 4 -->
+        <article class="cli-card">
+          <div class="cli-card-header">
+            <div>
+              <h3 class="cli-card-title"><span class="pulse-dot"></span> 4. Exposed Backend Database Security Group</h3>
+              <p class="muted" style="margin:4px 0 0;font-size:0.8rem">Creates a separate backend security group with port 22 exposed to 0.0.0.0/0.</p>
+            </div>
+            <div class="cli-badges">
+              <span class="severity High">High</span>
+              <span class="cli-score-pill">Score: 46 → 28 (-18 pts)</span>
+            </div>
+          </div>
+          <div class="cli-tabs">
+            <button type="button" class="cli-tab-btn active induce" data-mode="induce">Induce finding <span>Score decreases</span></button>
+            <button type="button" class="cli-tab-btn fix" data-mode="fix">Remediate <span>Score recovers</span></button>
+          </div>
+          <div class="cli-pane active" data-mode="induce">
+            <div class="cli-code-wrap">
+              <div class="cli-code-header">
+                <span>TERMINAL · AWS CLI</span>
+                <button type="button" class="copy-button copy-cli-btn" data-target="cmd-flaw-4">Copy</button>
+              </div>
+              <pre id="cmd-flaw-4">aws ec2 create-security-group --group-name demo-backend-sg --description "Backend DB security group" --region eu-north-1 --profile scanner 2>/dev/null || true
+aws ec2 authorize-security-group-ingress --group-name demo-backend-sg --protocol tcp --port 22 --cidr 0.0.0.0/0 --region eu-north-1 --profile scanner</pre>
+            </div>
+          </div>
+          <div class="cli-pane" data-mode="fix">
+            <div class="cli-code-wrap">
+              <div class="cli-code-header">
+                <span>TERMINAL · AWS CLI REMEDIATION</span>
+                <button type="button" class="copy-button copy-cli-btn" data-target="cmd-fix-4">Copy</button>
+              </div>
+              <pre id="cmd-fix-4">aws ec2 delete-security-group --group-name demo-backend-sg --region eu-north-1 --profile scanner</pre>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 5 -->
+        <article class="cli-card">
+          <div class="cli-card-header">
+            <div>
+              <h3 class="cli-card-title"><span class="pulse-dot"></span> 5. Expose S3 Bucket Policy Publicly</h3>
+              <p class="muted" style="margin:4px 0 0;font-size:0.8rem">Creates an S3 bucket with Block Public Access disabled and an open public read policy.</p>
+            </div>
+            <div class="cli-badges">
+              <span class="severity Critical">Critical</span>
+              <span class="cli-score-pill">Score: 28 → 0 (-30 pts)</span>
+            </div>
+          </div>
+          <div class="cli-tabs">
+            <button type="button" class="cli-tab-btn active induce" data-mode="induce">Induce finding <span>Score decreases</span></button>
+            <button type="button" class="cli-tab-btn fix" data-mode="fix">Remediate <span>Score recovers</span></button>
+          </div>
+          <div class="cli-pane active" data-mode="induce">
+            <div class="cli-code-wrap">
+              <div class="cli-code-header">
+                <span>TERMINAL · AWS CLI</span>
+                <button type="button" class="copy-button copy-cli-btn" data-target="cmd-flaw-5">Copy</button>
+              </div>
+              <pre id="cmd-flaw-5">ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text --profile scanner)
+aws s3api create-bucket --bucket "demo-public-bucket-${ACCOUNT_ID}" --region eu-north-1 --create-bucket-configuration LocationConstraint=eu-north-1 --profile scanner 2>/dev/null || true
+aws s3api put-public-access-block --bucket "demo-public-bucket-${ACCOUNT_ID}" --public-access-block-configuration "BlockPublicAcls=false,IgnorePublicAcls=false,BlockPublicPolicy=false,RestrictPublicBuckets=false" --profile scanner
+aws s3api put-bucket-policy --bucket "demo-public-bucket-${ACCOUNT_ID}" --policy "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Sid\":\"PublicRead\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Action\":\"s3:GetObject\",\"Resource\":\"arn:aws:s3:::demo-public-bucket-${ACCOUNT_ID}/*\"}]}" --profile scanner</pre>
+            </div>
+          </div>
+          <div class="cli-pane" data-mode="fix">
+            <div class="cli-code-wrap">
+              <div class="cli-code-header">
+                <span>TERMINAL · AWS CLI REMEDIATION</span>
+                <button type="button" class="copy-button copy-cli-btn" data-target="cmd-fix-5">Copy</button>
+              </div>
+              <pre id="cmd-fix-5">ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text --profile scanner)
+aws s3 rb "s3://demo-public-bucket-${ACCOUNT_ID}" --force --profile scanner</pre>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Emergency Clean All -->
+      <div class="cli-clean-all">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <h3 style="margin:0;font-size:0.9rem">Emergency cleanup (Reset score to 100)</h3>
+          <button type="button" class="copy-button copy-cli-btn" data-target="cmd-clean-all">Copy</button>
+        </div>
+        <p class="muted" style="margin:0 0 10px;font-size:0.78rem">Run this single composite command in Terminal to delete all demo security groups, volumes, and buckets created above.</p>
+        <div class="cli-code-wrap">
+          <pre id="cmd-clean-all">aws ec2 revoke-security-group-ingress --group-name demo-scanner-sg --protocol tcp --port 22 --cidr 0.0.0.0/0 --region eu-north-1 --profile scanner 2>/dev/null; \
+aws ec2 revoke-security-group-ingress --group-name demo-scanner-sg --protocol tcp --port 3389 --cidr 0.0.0.0/0 --region eu-north-1 --profile scanner 2>/dev/null; \
+aws ec2 delete-security-group --group-name demo-scanner-sg --region eu-north-1 --profile scanner 2>/dev/null; \
+aws ec2 delete-security-group --group-name demo-backend-sg --region eu-north-1 --profile scanner 2>/dev/null; \
+for vid in $(aws ec2 describe-volumes --filters "Name=tag:Name,Values=demo-unencrypted-vol-1" "Name=status,Values=available" --query "Volumes[].VolumeId" --output text --region eu-north-1 --profile scanner 2>/dev/null); do aws ec2 delete-volume --volume-id "$vid" --region eu-north-1 --profile scanner; done; \
+aws s3 rb "s3://demo-public-bucket-$(aws sts get-caller-identity --query Account --output text --profile scanner)" --force --profile scanner 2>/dev/null; \
+echo "All demo security issues removed. Run a scan to verify the score."</pre>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer>
+    Generated by the Automated Security Compliance Scanner for Cloud Accounts
+  </footer>
+  <script src="commands.js" defer></script>
+</body>
+</html>

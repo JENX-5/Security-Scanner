@@ -1,0 +1,4 @@
+aws_region          = "eu-north-1"
+project_name        = "cloud-compliance"
+alert_email         = "your-email@example.com"
+schedule_expression = "rate(1 day)"
